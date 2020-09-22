@@ -1,0 +1,7 @@
+<div class="after-content-cell after-content-sharing" id="twitter-cell"> 
+  <a href="https://twitter.com/share?text={{ .Title | safeHTML}}&nbsp;-&nbsp;{{ .Site.Title }}&nbsp;-&nbsp;&amp;hashtags={{ delimit .Params.tags ", " }}&amp;url={{ .Permalink }}"><i class="fa fa-twitter"></i></a>
+</div>
+
+<div class="after-content-cell after-content-sharing" id="facebook-cell"> 
+  <a href="https://www.facebook.com/sharer/sharer.php?u={{ .Permalink }}" onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;"><i class="fa fa-facebook-square"></i></a>
+</div>

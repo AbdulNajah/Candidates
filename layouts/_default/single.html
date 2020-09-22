@@ -1,0 +1,58 @@
+{{ partial "header" . }}
+
+<div class="content-wrapper">
+  
+<main class="col-md-9">
+
+    <div>
+
+      <h1><b>{{ .Title }}</b></h1>
+      
+      {{ partial "item-metainfo" . }}
+      
+      <p class="text-justify">{{ .Description | markdownify}}</p>
+
+    </div>
+
+    <div class="contents text-justify">{{ .Content }}</div>
+    
+    <br>
+    <div class="after-content">
+      <div class="after-content-cell"></div>
+      {{ partial "share" .}}
+      <div class="after-content-cell" id="jump-to-top"> {{ partial "jump-to-top" .}} </div>
+    </div>
+    
+    <!-- related posts with the same tags -->
+    {{ $related := first 3 (where (where (where .Site.Pages.ByDate.Reverse ".Type" "==" "post") ".Params.tags" "intersect" .Params.tags) "Permalink" "!=" .Permalink) }}
+
+    {{ if $related }}
+
+        <h4 class="page-header">Related</h4>
+
+        {{ range $related }}
+        
+          <h4><a href={{ .RelPermalink }}>{{ .Title }}</a></h4>
+          
+          {{ partial "item-metainfo" . }}
+        
+        {{ end }}
+
+    {{ end }}
+
+    <!-- disqus comments -->
+    {{ if and .Site.DisqusShortname (not .Params.disableComments) }}
+
+        <h4 class="page-header">Comments</h4>
+
+        {{ template "_internal/disqus.html" . }}
+
+    {{ end }}
+
+</main>
+
+{{ partial "table-of-contents" .}}
+
+</div>
+
+{{ partial "footer" . }}

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="{{ .Site.LanguageCode }}">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>{{ .Title }}</title>
+        {{ partial "css" . }} {{ partial "js" . }} {{ hugo.Generator }}
+        {{ with .OutputFormats.Get "RSS" }}
+        <link href="{{ .RelPermalink }}" rel="alternate" type="application/rss+xml" title="{{ $.Site.Title }}" />
+        <link href="{{ .RelPermalink }}" rel="feed" type="application/rss+xml" title="{{ $.Site.Title }}" />
+        {{ end }}
+        
+        <!-- Cards -->
+        {{ $defaultThumb := printf "%s%s" .Site.BaseURL .Site.Params.thumb}}
+        
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:site" content="{{ .Site.Params.siteTwitter }}" />
+        <meta name="twitter:creator" content="{{ .Site.Params.authorTwitter }}" />
+        <meta name="twitter:title" content="{{ .Title }}" />
+        <meta name="twitter:description" content="{{ .Description | default .Site.Params.Description }}" />
+        <meta name="twitter:image" content="{{ .Params.image | default $defaultThumb }}" />
+        
+        <meta property="og:title" content="{{ .Title }}">
+        <meta property="og:description" content="{{ .Description | default .Site.Params.Description }}">
+        <meta property="og:image" content="{{ .Params.image | default $defaultThumb }}" />
+        <meta property="og:url" content="{{ .Permalink }}">
+        <meta property="og:site_name" content="{{ .Site.Title }}">
+        
+        <!-- End Cards -->
+        
+        <!-- Favicons -->
+          <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
+          <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+          <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+          <link rel="manifest" href="/favicon/manifest.json">
+          <link rel="mask-icon" href="/favicon/safari-pinned-tab.svg" color="#5bbad5">
+          <link rel="shortcut icon" href="/favicon/favicon.ico">
+          <meta name="msapplication-config" content="/favicon/browserconfig.xml">
+          <meta name="theme-color" content="#ffffff">
+        <!-- End Favicons -->
+        
+        <!-- Global Site Tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id={{ .Site.GoogleAnalytics }}"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments)};
+  gtag('js', new Date());
+
+  gtag('config', '{{ .Site.GoogleAnalytics }}');
+</script>
+        
+    </head>
+
+    <body data-spy="scroll" data-target="#sidebar" data-offset="50">
+
+        <nav class="navbar navbar-default navbar-fixed-top">
+
+            <div class="container">
+
+                <div class="navbar-header">
+
+                    <a href="/" class = "navbar-brand site-title"> {{ .Site.Title }} </a>
+
+                    <button class="navbar-toggle" data-target=".navbar-collapse" data-toggle="collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+
+                </div>
+
+                <div class="collapse navbar-collapse">
+                    
+                    {{ if .Site.Menus.main }}
+                        <ul class="nav navbar-nav">
+                            {{ range sort .Site.Menus.main }}
+                                <li><a href="{{ .URL }}">{{ .Name }}</a></li>
+                            {{ end }}
+                        </ul>
+                    {{ end }}
+
+                    {{ if .Site.Menus.icon }}
+                        <ul class="nav navbar-nav navbar-right">
+                            {{ range sort .Site.Menus.icon }}
+                                <li class="navbar-icon"><a href="{{ .URL }}"><i class="fa fa-{{ .Name }}"></i></a></li>
+                            {{ end }}
+                        </ul>
+                    {{ end }}
+
+                </div>
+
+            </div>
+
+        </nav>

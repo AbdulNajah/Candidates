@@ -1,0 +1,23 @@
+baseURL = ""
+languageCode = "en-us"
+title = "Indian Political Candidates"
+theme = "minimal"
+ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
+
+[permalinks]
+    post = "/:year/:month/:day/:slug/"
+
+[[menu.main]]
+    url = "/about/"
+    name = "About"
+    weight = 1
+
+[[menu.main]]
+    url = "/post/"
+    name = "Posts"
+    weight = 2
+
+[[menu.main]]
+    url = "/project/"
+    name = "Projects"
+    weight = 3
