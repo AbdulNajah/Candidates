@@ -1,4 +1,4 @@
-baseURL = ""
+baseURL = "https://pol-candidates.netlify.app"
 languageCode = "en-us"
 title = "Indian Political Candidates"
 theme = "minimal"
