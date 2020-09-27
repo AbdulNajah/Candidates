@@ -10,9 +10,9 @@ tags: []
 ---
 ```{r set up, warning=FALSE, include=FALSE, message= FALSE}
 
-knitr::opts_chunk$set(cache = FALSE,echo = FALSE, message=FALSE, warning = FALSE)
+knitr::opts_chunk$set(cache = FALSE,echo = FALSE, message=FALSE, warning = FALSE,fig.width = 16/2, fig.height = 9/2)
 
-##fig.width = 16/2, fig.height = 9/2
+
 
 library(tidyverse)
 library(data.table)
@@ -27,10 +27,17 @@ select <- dplyr::select
 ```
 
 
+<style type="text/css">
+.table {
+
+    width: 30%;
+
+}
+</style>
+
 ## Vote share
 
 ```{r}
-
 ge_all <- fread("D:/cpr/up-dynasties/dyn_other_data/GE_all.csv")
 
 
@@ -53,9 +60,12 @@ ge %>%
   pivot_wider(names_from = ind, values_from = 3:4) %>% 
   kable(digits =2) %>% 
   kable_styling(bootstrap_options = "striped")
+```
 
 
 
+
+```{r}
 ge %>%
   group_by(Year, vote_share_pc)%>%
   summarise(count = n())%>%
@@ -65,7 +75,7 @@ ge %>%
   select(Year, vote_share_pc,count,prop)%>%
   pivot_wider(names_from = vote_share_pc, values_from = 3:4) %>%
   select(Year,`count_(0,1]`,`prop_(0,1]`, `count_(1,5]`, `prop_(1,5]`, `count_(5,17]`, `prop_(5,17]`, `count_(17,Inf]`,`prop_(17,Inf]` )%>%
-  kable(digits =2,format = "html", table.attr = "style='width:30%;'")  %>% 
+  kable(digits =2)  %>% 
   kable_styling(bootstrap_options = "striped")
 
 

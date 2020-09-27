@@ -1,0 +1,351 @@
+---
+title: "general analysis"
+author: ''
+date: '2020-09-22'
+params:
+  orig_date: 'Original Publish Date: 22 September, 2020'
+  update_date: !r paste("Updated on:", format(Sys.time(), '%d %B, %Y'))
+slug: general-analysis
+categories: []
+tags: []
+editor_options:
+  chunk_output_type: inline
+---
+```{r set up, warning=FALSE, include=FALSE, message= FALSE }
+
+knitr::opts_chunk$set(cache = TRUE,echo = FALSE, message=FALSE, warning = FALSE,fig.width = 16/2, fig.height = 9/2)
+
+
+library(tidyverse)
+library(data.table)
+library(knitr)
+library(kableExtra)
+library(scales)
+library(gridExtra)
+library(stargazer)
+library(cowplot)
+library(ggalt)
+library(bbplot)
+`%!in%` = Negate(`%in%`)
+
+select <- dplyr::select
+ 
+```
+
+---
+
+### Document History
+
+`r params$orig_date`
+
+`r params$update_date`
+
+---
+
+
+```{r reading the data}
+
+ge_all <- fread("D:/cpr/up-dynasties/dyn_other_data/GE_all.csv")
+
+names(ge_all) <- tolower(names(ge_all))
+
+names(ge_all)
+# 
+# dim(ge_all)
+
+
+```
+
+
+---
+
+## Number of candidates
+
+```{r}
+
+#ge_all <- ge_all %>% group_by(year, state_name, constituency_no) %>% mutate(n_cand_new = n())
+
+ge_all %>% filter(poll_no ==0) %>% group_by(year) %>% summarise(n_cand = mean(n_cand)) %>% 
+  ggplot(aes(factor(year),n_cand, group = 1 ))+
+  geom_point()+
+  #geom_line()+
+  labs(title = "Average number of candidates", x = "Year")+
+  geom_smooth()+
+  theme_minimal()
+
+
+# ge_all %>% filter(poll_no ==0) %>% group_by(state_name,year) %>% summarise(n_cand = mean(n_cand)) %>% 
+#   ggplot(aes(factor(year),n_cand ))+
+#   geom_point()+
+#   #geom_line()+
+#   #abs(title = "Average number of candidates", x = "Year")+
+#   #geom_smooth()+
+#   facet_wrap(~state_name, ncol =4)
+#   #theme_minimal()
+ 
+
+```
+
+
+
+---
+
+## Turnout percentage
+
+
+```{r message=FALSE, warning= FALSE}
+
+ge_all %>% filter(poll_no ==0 & position ==1) %>% group_by(year) %>% summarise(turnout = mean(turnout_percentage)) %>% 
+  ggplot(aes(factor(year),turnout, group = 1 ))+
+  geom_point()+
+  #geom_line()+
+  labs(title = "Average turnout percentage", x = "Year")+
+  geom_smooth()+
+  theme_minimal()
+
+# ge_all %>% filter(poll_no ==0 & position ==1) %>% group_by(state_name,year) %>% summarise(turnout = mean(turnout_percentage)) %>% 
+#   ggplot(aes(factor(year),turnout, group =1 ))+
+#   geom_point()+
+#   geom_line()+
+#   geom_smooth()+
+#   
+#   facet_wrap(~state_name, ncol = 4)
+# 
+#   ge_all %>% filter(poll_no ==0 & position ==1) %>% group_by(year, state_name) %>% summarise(turnout = mean(turnout_percentage)) %>% 
+#   ggplot(aes(factor(year),turnout, color = state_name, group = state_name))+
+#   geom_point()+
+#   geom_line()+
+#   geom_smooth()+
+#   theme(legend.position = "none")
+
+```
+
+
+
+
+---
+
+## margin perecentage
+
+
+```{r}
+
+ge_all %>% filter(poll_no ==0 & position ==1) %>% group_by(year) %>% summarise(margin = mean(margin_percentage, na.rm = TRUE))%>% 
+  ggplot(aes(factor(year),margin, group = 1 ))+
+  geom_point()+
+  #geom_line()+
+  labs(title = "Average margin percentage", x = "Year")+
+  geom_smooth()+
+  theme_minimal()
+
+# ge_all %>% filter(poll_no ==0 & position ==1) %>% group_by( state_name, year) %>% summarise(margin = mean(margin_percentage, na.rm = TRUE))%>% 
+#     ggplot(aes(factor(year),margin, group = 1 ))+
+#     geom_point()+
+#     geom_smooth()+
+#     facet_wrap(~state_name, ncol =5)
+
+
+```
+
+
+---
+## Vote share perecentage
+
+### candidates
+
+```{r}
+
+ge_all %>% filter(poll_no ==0 ) %>% group_by(year) %>% summarise(vote_share = mean(vote_share_percentage, na.rm = TRUE))%>% 
+  ggplot(aes(factor(year),vote_share, group = 1 ))+
+  geom_point()+
+  #geom_line()+
+  labs(title = "Vote share percentage - candidates", x = "Year")+
+  geom_smooth()+
+  theme_minimal()
+
+```
+
+
+### Winner
+
+```{r message=FALSE, warning = FALSE}
+ge_all %>% filter(poll_no ==0& position ==1 ) %>% group_by(year) %>% summarise(vote_share = mean(vote_share_percentage, na.rm = TRUE))%>% 
+  ggplot(aes(factor(year),vote_share, group = 1 ))+
+  geom_point()+
+  #geom_line()+
+  labs(title = "Vote share percentage - winners", x = "Year")+
+  geom_smooth()+
+  theme_minimal()
+
+
+# ge_all %>% filter(poll_no ==0& position ==1 ) %>% group_by(state_name,year) %>% summarise(vote_share = mean(vote_share_percentage, na.rm = TRUE))%>% 
+#   ggplot(aes(factor(year),vote_share, group = 1 ))+
+#   geom_point()+
+#   #geom_line()+
+#   geom_smooth()+
+#   facet_wrap(~state_name, ncol = 6, nrow = 10)
+
+```
+
+
+---
+
+## ENOP
+
+
+```{r message=FALSE, warning=FALSE}
+ge_all %>% filter(poll_no ==0& position ==1 ) %>% group_by(year) %>% summarise(enop = mean(enop, na.rm = TRUE))%>% 
+  ggplot(aes(factor(year),enop, group = 1 ))+
+  geom_point()+
+  #geom_line()+
+  labs(title = "Effective number of parties", x = "Year")+
+  geom_smooth()+
+  theme_minimal()
+
+  # ge_all %>% filter(poll_no ==0& position ==1 ) %>% group_by(state_name,year) %>% summarise(enop = mean(enop, na.rm = TRUE))%>% 
+  # ggplot(aes(factor(year),enop, group = 1 ))+
+  # geom_point()+
+  # #geom_line()+
+  # labs(title = "Effective number of parties", x = "Year")+
+  # geom_smooth()+
+  # facet_wrap(~state_name)
+```
+
+
+
+---
+
+## Number of terms
+
+
+### Candidates
+
+
+
+```{r}
+
+ge_all %>% filter(poll_no ==0 ) %>% group_by(year) %>% summarise(no_terms = mean(no_terms, na.rm = TRUE))%>% 
+  ggplot(aes(factor(year),no_terms, group = 1 ))+
+  geom_point()+
+  #geom_line()+
+  labs(title = "Number of terms - candidates", x = "Year")+
+  geom_smooth()+
+  theme_minimal()
+
+```
+
+
+### Winners
+
+
+```{r}
+ge_all %>% filter(poll_no ==0& position ==1 ) %>% group_by(year) %>% summarise(no_terms = mean(no_terms, na.rm = TRUE))%>% 
+  ggplot(aes(factor(year),no_terms, group = 1 ))+
+  geom_point()+
+  #geom_line()+
+  labs(title = "Number of terms - winners", x = "Year")+
+  geom_smooth()+
+  theme_minimal()
+```
+
+---
+
+## Turncoat
+
+### Candidates
+
+
+```{r}
+ge_all %>% filter(poll_no ==0 ) %>% group_by(year) %>% summarise(turncoat = mean(turncoat, na.rm = TRUE))%>% 
+  ggplot(aes(factor(year),turncoat, group = 1 ))+
+  geom_point()+
+  #geom_line()+
+  labs(title = "Proportion of  turncoats  - winners", x = "Year")+
+  geom_smooth()+
+  theme_minimal()
+```
+
+### Winners
+
+```{r}
+ge_all %>% filter(poll_no ==0& position ==1 ) %>% group_by(year) %>% summarise(turncoat = mean(turncoat, na.rm = TRUE))%>% 
+  ggplot(aes(factor(year),turncoat, group = 1 ))+
+  geom_point()+
+  #geom_line()+
+  labs(title = "Proportion of  turncoats - winners", x = "Year")+
+  geom_smooth()+
+  theme_minimal()
+```
+
+---
+
+## Incumbents
+
+### Candidates
+
+```{r}
+ge_all %>% filter(poll_no ==0 ) %>% group_by(year) %>% summarise(incumbent = mean(incumbent, na.rm = TRUE))%>% 
+  ggplot(aes(factor(year),incumbent, group = 1 ))+
+  geom_point()+
+  #geom_line()+
+  labs(title = "Proportion of incumbents - candidates", x = "Year")+
+  geom_smooth()+
+  theme_minimal()
+```
+
+
+### Winners
+
+```{r}
+ge_all %>% filter(poll_no ==0& position ==1 ) %>% group_by(year) %>% summarise(incumbent = mean(incumbent, na.rm = TRUE))%>% 
+  ggplot(aes(factor(year),incumbent, group = 1 ))+
+  geom_point()+
+  #geom_line()+
+  labs(title = "Proportion of incumbents - winners", x = "Year")+
+  geom_smooth()+
+  theme_minimal()
+```
+
+---
+
+
+## Recontest
+
+### Candidates
+
+```{r}
+ge_all %>% filter(poll_no ==0 ) %>% group_by(year) %>% summarise(recontest = mean(recontest, na.rm = TRUE))%>% 
+  ggplot(aes(factor(year),recontest, group = 1 ))+
+  geom_point()+
+  #geom_line()+
+  labs(title = "Proportion of recontestants - candidates", x = "Year")+
+  geom_smooth()+
+  theme_minimal()
+```
+
+
+### Winners
+
+```{r}
+ge_all %>% filter(poll_no ==0& position ==1 ) %>% group_by(year) %>% summarise(recontest = mean(recontest, na.rm = TRUE))%>% 
+  ggplot(aes(factor(year),recontest, group = 1 ))+
+  geom_point()+
+  #geom_line()+
+  labs(title = "Proportion of recontestants - candidates", x = "Year")+
+  geom_smooth()+
+  theme_minimal()
+```
+
+
+## Deposit lost
+
+
+```{r}
+
+```
+
+
+
+
+
+
